@@ -1,0 +1,10 @@
+@use '../../styles/mixins' as m;
+
+.chip {
+  @include m.pill;
+}
+
+.small {
+  padding: 0.18rem 0.6rem;
+  font-size: 0.7rem;
+}

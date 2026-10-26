@@ -1,0 +1,13 @@
+.footer {
+  padding-block: 2.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  background: var(--bg-soft);
+  border-top: var(--border-w) solid var(--border);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,45 @@
+@use '../../styles/mixins' as m;
+
+.section {
+  /* This section sits 165° further around the colour wheel. */
+  --hue-shift: calc(var(--hue-base) + 165deg);
+  @include m.section;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2rem, 5vw, 3.5rem);
+  text-align: center;
+  background: var(--surface);
+  border: var(--border-w) solid var(--border);
+  box-shadow: var(--shadow-hard-lg);
+}
+
+/* Halftone wash so the last section still has ink on it. */
+.wash {
+  position: absolute;
+  inset: 0;
+  --dot-gap: 15px;
+  --dot-r: 3.4px;
+  @include m.halftone;
+
+  mask-image: radial-gradient(ellipse 70% 100% at 50% 120%, #000 10%, transparent 70%);
+  pointer-events: none;
+}
+
+.body {
+  position: relative;
+  max-width: 34rem;
+  margin-inline: auto;
+  color: var(--text-soft);
+}
+
+.links {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 2rem;
+}

@@ -1,0 +1,12 @@
+/* Same three-ink dot cluster as the logo mark, shrunk to sit inside a
+   header button — makes clear this button does the same thing the logo does. */
+.swatch {
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  background-image:
+    radial-gradient(circle at 34% 34%, var(--cyan) 42%, transparent 44%),
+    radial-gradient(circle at 66% 38%, var(--magenta) 42%, transparent 44%),
+    radial-gradient(circle at 48% 68%, var(--yellow) 42%, transparent 44%);
+  border: 1.5px solid var(--border);
+}

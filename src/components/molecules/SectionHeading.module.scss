@@ -1,0 +1,31 @@
+.head {
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+
+  /* Dotted rule, same screen as the rest of the page. */
+  &::after {
+    content: '';
+    flex: 1;
+    height: 5px;
+    max-width: 9rem;
+    background-image: radial-gradient(circle at center, var(--cyan) 2px, transparent 2.3px);
+    background-size: 9px 9px;
+  }
+}
+
+.title {
+  margin-top: 0.55rem;
+  font-size: clamp(2rem, 5.4vw, 3.4rem);
+  font-weight: 900;
+  text-transform: uppercase;
+}

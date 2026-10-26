@@ -1,0 +1,42 @@
+@use '../../styles/mixins' as m;
+
+.header {
+  position: fixed;
+  top: 5px;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-bottom: var(--border-w) solid transparent;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.scrolled {
+  background: var(--bg);
+  border-bottom-color: var(--border);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: var(--header-h);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.menuButton {
+  display: inline-grid;
+}
+
+@include m.up(m.$lg) {
+  .menuButton {
+    display: none;
+  }
+}

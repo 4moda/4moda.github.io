@@ -1,0 +1,198 @@
+@use '../../styles/mixins' as m;
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: min(100svh, 54rem);
+  padding-top: calc(var(--header-h) + 3rem);
+  padding-bottom: clamp(4rem, 8vw, 7rem);
+  overflow: hidden;
+
+  /* Pointer position, kept in sync by usePointerSpotlight. */
+  --mx: 50%;
+  --my: 45%;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Coarse CMY rosette across the whole hero, fading out at the fold. */
+.plates {
+  position: absolute;
+  inset: -10% -10% -10% 34%;
+  --dot-gap: 24px;
+  --dot-r: 4.6px;
+  @include m.halftone;
+
+  mask-image:
+    linear-gradient(100deg, transparent 8%, #000 46%),
+    radial-gradient(ellipse 85% 95% at 72% 45%, #000 25%, transparent 78%);
+  mask-composite: intersect;
+  animation: plate-breathe 16s ease-in-out infinite;
+}
+
+/* The ink gets denser where the cursor is. */
+.spotlight {
+  position: absolute;
+  inset: 0;
+  --dot-gap: 15px;
+  --dot-r: 3.6px;
+  --dot-opacity: 0.4;
+  @include m.halftone;
+
+  mask-image: radial-gradient(13rem 13rem at var(--mx) var(--my), #000 2%, transparent 72%);
+  transition: mask-image 0.12s linear;
+}
+
+/* A few flat shapes, like spot colour printed under the type. */
+.shape {
+  position: absolute;
+  border: var(--border-w) solid var(--border);
+  mix-blend-mode: var(--plate-blend);
+  animation: shape-float 19s ease-in-out infinite;
+}
+
+.shapeA {
+  top: 14%;
+  right: 9%;
+  width: clamp(5rem, 11vw, 9rem);
+  aspect-ratio: 1;
+  background: var(--magenta);
+  border-radius: 50%;
+}
+
+.shapeB {
+  bottom: 14%;
+  right: 24%;
+  width: clamp(4rem, 8vw, 6.5rem);
+  aspect-ratio: 1;
+  background: var(--cyan);
+  animation-delay: -6s;
+  transform: rotate(14deg);
+}
+
+.shapeC {
+  top: 62%;
+  right: 6%;
+  width: clamp(3rem, 6vw, 5rem);
+  aspect-ratio: 1;
+  background: var(--yellow);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  border: 0;
+  animation-delay: -12s;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: 46rem;
+}
+
+.title {
+  margin-top: 1.25rem;
+}
+
+/* Katakana reading, JA only — small and quiet, just enough to settle how
+   the kanji is read. */
+.reading {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: clamp(0.78rem, 1.6vw, 0.92rem);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  color: var(--text-faint);
+}
+
+/* .role is the name itself — the hero headline, no separate title line. */
+.role {
+  display: block;
+  font-size: clamp(2.1rem, 6.8vw, 4.2rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-faint);
+
+  svg {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 2rem;
+}
+
+.links {
+  margin-top: 1.5rem;
+}
+
+.scrollHint {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  transform: translateX(-50%);
+  animation: hint-bob 2.6s ease-in-out infinite;
+}
+
+.scrollDots {
+  width: 5px;
+  height: 2.4rem;
+  background-image: radial-gradient(circle at center, var(--magenta) 2px, transparent 2.3px);
+  background-size: 7px 7px;
+}
+
+@keyframes shape-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-1.5rem, 1.8rem, 0) rotate(10deg);
+  }
+}
+
+@keyframes hint-bob {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate(-50%, 6px);
+    opacity: 1;
+  }
+}
+
+@include m.down(m.$md) {
+  .shape,
+  .scrollHint {
+    display: none;
+  }
+}

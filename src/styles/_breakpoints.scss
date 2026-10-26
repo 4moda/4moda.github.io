@@ -1,0 +1,17 @@
+// Single source of truth for layout breakpoints.
+$sm: 480px;
+$md: 720px;
+$lg: 960px;
+$xl: 1200px;
+
+@mixin up($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+
+@mixin down($bp) {
+  @media (max-width: ($bp - 0.02px)) {
+    @content;
+  }
+}

@@ -1,0 +1,163 @@
+// This band is a physical artifact — a strip of film — so its colours are
+// hard-coded, not theme tokens: film stays the same dark base and cream
+// emulsion whether the page is in light or dark mode.
+$film-bg: #141217;
+$film-light: #f1ead9;
+$film-shadow: rgba(0, 0, 0, 0.55);
+
+.marquee {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  height: 3.75rem;
+  background: $film-bg;
+  user-select: none;
+}
+
+/* Thin ink bleed at the very edges — the one place this "film" admits it's
+   still printed on the same CMY press as the rest of the page. */
+.marquee::before,
+.marquee::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-gradient);
+  z-index: 3;
+}
+
+.marquee::before {
+  top: 0;
+}
+
+.marquee::after {
+  bottom: 0;
+}
+
+/* Two identical tracks slide left; when the first exits, the second is
+   exactly where it started, so the loop has no seam. */
+.track {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0;
+  /* With no words (content.ts marquee: []) the track has no content to size
+     against and collapses to zero width — taking the sprocket holes painted
+     on it down with it. This keeps a blank strip still looking like film. */
+  min-width: 100%;
+  animation: marquee-slide 26s linear infinite;
+}
+
+/* Sprocket holes, painted onto the track itself so they slide with the words
+   instead of sitting still underneath them. */
+.track::before,
+.track::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 7px;
+  background-image: radial-gradient(circle at center, $film-light 2.6px, transparent 3px);
+  background-size: 20px 100%;
+  background-repeat: repeat-x;
+  opacity: 0.85;
+}
+
+.track::before {
+  top: 7px;
+}
+
+.track::after {
+  bottom: 7px;
+}
+
+.word {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.75rem;
+  padding-inline: 1.75rem;
+  height: 3.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $film-light;
+  white-space: nowrap;
+  border-right: 1px solid rgba($film-light, 0.25);
+}
+
+.marquee:hover .track {
+  animation-play-state: paused;
+}
+
+// Generic 35mm canister colours — yellow body, black cap — evoking the most
+// familiar film canister shape without reproducing any brand's actual mark.
+$canister-yellow: #ffd200;
+$canister-yellow-shadow: #c89a00;
+
+/* A film canister, clipped to the left edge of the strip — the words read
+   as though they're being pulled straight out of it. */
+.canister {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  width: clamp(3.75rem, 7vw, 5.5rem);
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.88) 0 13%, transparent 13% 16%),
+    radial-gradient(120% 140% at 18% 55%, $canister-yellow, $canister-yellow-shadow 78%);
+  box-shadow: 10px 0 18px $film-shadow;
+  pointer-events: none;
+}
+
+/* The canister's spindle cap. */
+.canister::before {
+  content: '';
+  position: absolute;
+  top: 54%;
+  left: 28%;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: radial-gradient(circle at 35% 35%, #3a3a3f, #0e0e10 75%);
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spool-turn 2.6s linear infinite;
+}
+
+/* The slot the film feeds out through. */
+.canister::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 3px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+@keyframes marquee-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes spool-turn {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .canister::before {
+    animation: none;
+  }
+}

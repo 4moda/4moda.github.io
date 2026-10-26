@@ -1,0 +1,18 @@
+.track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  height: 5px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+  pointer-events: none;
+}
+
+.bar {
+  height: 100%;
+  background: var(--accent-gradient);
+  transform-origin: left;
+  will-change: transform;
+}

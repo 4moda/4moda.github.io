@@ -1,0 +1,106 @@
+@use './breakpoints' as bp;
+
+@forward './breakpoints';
+
+/// Horizontally centred content column, used by every section.
+@mixin container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 2.5rem);
+}
+
+/// Vertical rhythm shared by every section organism.
+@mixin section {
+  position: relative;
+  padding-block: var(--section-gap);
+}
+
+/// Flat panel with a hard ink outline, the way a printed block sits on paper.
+@mixin surface($radius: var(--radius-lg)) {
+  background: var(--surface);
+  border: var(--border-w) solid var(--border);
+  border-radius: $radius;
+  box-shadow: var(--shadow-hard);
+}
+
+/// Hover moves the block into its own shadow instead of floating it.
+@mixin lift($x: -3px, $y: -3px) {
+  transition:
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out);
+
+  &:hover {
+    transform: translate($x, $y);
+    box-shadow: var(--shadow-hard-lg);
+  }
+}
+
+/// Monospace pill used for tags and keywords.
+@mixin pill {
+  padding: 0.25rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/// One halftone plate: a grid of dots in a single ink.
+/// $offset-x / $offset-y misregister this plate against the others.
+@mixin plate($ink, $offset-x: 0px, $offset-y: 0px, $scale: 1) {
+  background-image: radial-gradient(
+    circle at center,
+    #{$ink} calc(var(--dot-r) * #{$scale}),
+    transparent calc(var(--dot-r) * #{$scale} + 0.6px)
+  );
+  background-size: var(--dot-gap) var(--dot-gap);
+  background-position: #{$offset-x} #{$offset-y};
+}
+
+/// The three plates stacked and slightly out of register — a CMY rosette.
+@mixin halftone($scale: 1) {
+  background-image:
+    radial-gradient(
+      circle at center,
+      var(--cyan) calc(var(--dot-r) * #{$scale}),
+      transparent calc(var(--dot-r) * #{$scale} + 0.6px)
+    ),
+    radial-gradient(
+      circle at center,
+      var(--magenta) calc(var(--dot-r) * #{$scale}),
+      transparent calc(var(--dot-r) * #{$scale} + 0.6px)
+    ),
+    radial-gradient(
+      circle at center,
+      var(--yellow) calc(var(--dot-r) * #{$scale}),
+      transparent calc(var(--dot-r) * #{$scale} + 0.6px)
+    );
+  background-size: var(--dot-gap) var(--dot-gap);
+  background-position:
+    0 0,
+    calc(var(--dot-gap) / 3) calc(var(--dot-gap) / 4),
+    calc(var(--dot-gap) / 1.6) calc(var(--dot-gap) / 1.8);
+  mix-blend-mode: var(--plate-blend);
+  opacity: var(--dot-opacity);
+}
+
+/// Fluid display type.
+@mixin display($min, $max, $vw: 6vw) {
+  font-size: clamp($min, $vw, $max);
+}
+
+/// Visually hidden but available to screen readers.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

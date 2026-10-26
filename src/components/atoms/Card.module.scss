@@ -1,0 +1,11 @@
+@use '../../styles/mixins' as m;
+
+.card {
+  @include m.surface;
+  @include m.lift;
+
+  position: relative;
+  height: 100%;
+  padding: clamp(1.4rem, 2.6vw, 1.9rem);
+  overflow: hidden;
+}

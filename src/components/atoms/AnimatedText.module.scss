@@ -1,0 +1,35 @@
+.text {
+  display: inline-block;
+}
+
+.char {
+  display: inline-block;
+  white-space: pre;
+  animation: char-in 0.7s var(--ease-out) backwards;
+}
+
+/* A plain space collapses to almost nothing under tight negative
+   letter-spacing on display headlines; force a real gap. */
+.space {
+  min-width: 0.32em;
+}
+
+/* Letters drop in and settle, one after another. */
+@keyframes char-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em) rotate(8deg);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .char {
+    animation: none;
+  }
+}

@@ -1,0 +1,87 @@
+@use '../../styles/mixins' as m;
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.9rem, 2.2vw, 1.7rem);
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.item {
+  position: relative;
+  color: var(--text-soft);
+  transition: color 0.2s ease;
+
+  /* Dotted underline that fills in on hover and for the active section. */
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.45rem;
+    height: 5px;
+    background-image: radial-gradient(circle at center, var(--magenta) 2px, transparent 2.3px);
+    background-size: 7px 7px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s var(--ease-out);
+  }
+
+  &:hover {
+    color: var(--text);
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.active {
+  color: var(--text);
+
+  &::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Below the large breakpoint the nav becomes a drop-down panel. */
+@include m.down(m.$lg) {
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 1rem clamp(1.25rem, 5vw, 2.5rem) 1.5rem;
+    background: var(--surface);
+    border-bottom: var(--border-w) solid var(--border);
+    box-shadow: var(--shadow-hard);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s var(--ease-out),
+      visibility 0.2s;
+  }
+
+  .open {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .item {
+    width: 100%;
+    padding: 0.55rem 0;
+    font-size: 1.05rem;
+
+    &::after {
+      bottom: 0.1rem;
+    }
+  }
+}

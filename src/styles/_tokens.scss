@@ -1,0 +1,98 @@
+/* Design tokens.
+   The palette is print-shop CMY rather than screen pastels: three primaries
+   that overlap and misregister slightly, the way a cheap riso print does.
+   Light is the default; dark overrides colour tokens only. */
+:root {
+  --font-display: 'Archivo', 'Noto Sans JP', system-ui, sans-serif;
+  --font-body: 'Inter', 'Noto Sans JP', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* One hue governs the whole palette; the logo rotates --hue-base and each
+     section offsets --hue-shift from it. */
+  --hue-base: 0deg;
+  --hue-shift: var(--hue-base);
+
+  /* The three "plates". Deliberately close to pure ink, HSL at full
+     saturation — these are for backgrounds, shapes, gradients and chips,
+     which pair with a fixed ink/on-accent foreground, so their own contrast
+     against --bg doesn't matter. Stay vivid. */
+  --cyan: hsl(calc(194deg + var(--hue-shift)) 100% 47%);
+  --magenta: hsl(calc(327deg + var(--hue-shift)) 100% 50%);
+  --yellow: hsl(calc(50deg + var(--hue-shift)) 100% 50%);
+  /* Overlaps, used where two plates would print on top of each other. */
+  --violet: hsl(calc(262deg + var(--hue-shift)) 85% 58%);
+  --red: hsl(calc(8deg + var(--hue-shift)) 92% 56%);
+  --green: hsl(calc(150deg + var(--hue-shift)) 72% 44%);
+
+  /* The one place a rotating hue sits directly on --bg as body text (the
+     eyebrow label, the active nav/lang state, the logo name on hover) —
+     anchored to the same hue magenta uses. OKLCH because HSL at a fixed
+     lightness swings wildly brighter/darker by hue (that's what made the
+     tokens above unsafe for this job): yellow at L=50% reads far brighter
+     than violet at the same L. L=0.46/C=0.2 measured worst-case ~5:1
+     against --bg across the full hue sweep; the dark block below lifts it
+     to L=0.74 for the same reason against a near-black --bg. */
+  --accent-text: oklch(0.46 0.2 calc(327deg + var(--hue-shift)));
+
+  --bg: #f7f4ec;
+  --bg-soft: #efe9dc;
+  --surface: #ffffff;
+  --surface-solid: #ffffff;
+  --ink: #15131a;
+  --border: #15131a;
+  --border-soft: rgba(21, 19, 26, 0.16);
+  --text: #15131a;
+  --text-soft: #4a4654;
+  --text-faint: #7d7889;
+  --on-accent: #ffffff;
+
+  /* Print has no soft shadows: offset blocks of flat colour instead. */
+  --shadow-hard: 5px 5px 0 var(--ink);
+  --shadow-hard-lg: 9px 9px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+
+  /* Halftone screen. --dot-gap is the cell, --dot-r the ink radius. */
+  --dot-gap: 11px;
+  --dot-r: 2.1px;
+  --dot-opacity: 0.5;
+  --plate-blend: multiply;
+  --grid-opacity: 0.07;
+
+  --accent-gradient: linear-gradient(100deg, var(--cyan), var(--magenta) 52%, var(--yellow));
+
+  --radius-sm: 0px;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --border-w: 2px;
+
+  --container: 1120px;
+  --section-gap: clamp(4.5rem, 9vw, 8rem);
+  --header-h: 4.25rem;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:root[data-theme='dark'] {
+  --accent-text: oklch(0.74 0.2 calc(327deg + var(--hue-shift)));
+
+  --bg: #0c0b10;
+  --bg-soft: #141220;
+  --surface: #17151f;
+  --surface-solid: #17151f;
+  --ink: #f6f3ff;
+  --border: #f6f3ff;
+  --border-soft: rgba(246, 243, 255, 0.22);
+  --text: #f6f3ff;
+  --text-soft: #b9b4cc;
+  --text-faint: #837e97;
+  --on-accent: #0c0b10;
+
+  --shadow-hard: 5px 5px 0 var(--ink);
+  --shadow-hard-lg: 9px 9px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+
+  --dot-opacity: 0.42;
+  /* Ink overlaps go dark on paper and bright on a dark screen. */
+  --plate-blend: screen;
+  --grid-opacity: 0.09;
+}
