@@ -132,3 +132,67 @@ export function usePointerSpotlight<T extends HTMLElement>(ref: React.RefObject<
     }
   }, [ref])
 }
+
+/**
+ * Pushes each element in `shapeRefs` away from the pointer whenever it comes
+ * within `radius` px, writing the offset to --push-x / --push-y (a CSS
+ * transition on those does the easing, this just supplies the target).
+ * No-op for touch and for readers who asked for reduced motion — same
+ * guard as usePointerSpotlight, since this is the same kind of decoration.
+ */
+export function useShapeDodge(
+  containerRef: React.RefObject<HTMLElement | null>,
+  shapeRefs: React.RefObject<HTMLElement | null>[],
+  radius = 170,
+  maxPush = 46,
+) {
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!window.matchMedia('(pointer: fine)').matches) return
+
+    let frame = 0
+    let pointerX = -Infinity
+    let pointerY = -Infinity
+
+    const apply = () => {
+      frame = 0
+      for (const ref of shapeRefs) {
+        const el = ref.current
+        if (!el) continue
+        const rect = el.getBoundingClientRect()
+        const dx = rect.left + rect.width / 2 - pointerX
+        const dy = rect.top + rect.height / 2 - pointerY
+        const dist = Math.hypot(dx, dy)
+        if (dist > 0.01 && dist < radius) {
+          const strength = (1 - dist / radius) * maxPush
+          el.style.setProperty('--push-x', `${((dx / dist) * strength).toFixed(1)}px`)
+          el.style.setProperty('--push-y', `${((dy / dist) * strength).toFixed(1)}px`)
+        } else {
+          el.style.setProperty('--push-x', '0px')
+          el.style.setProperty('--push-y', '0px')
+        }
+      }
+    }
+
+    const onMove = (event: PointerEvent) => {
+      pointerX = event.clientX
+      pointerY = event.clientY
+      if (!frame) frame = requestAnimationFrame(apply)
+    }
+    const onLeave = () => {
+      pointerX = -Infinity
+      pointerY = -Infinity
+      if (!frame) frame = requestAnimationFrame(apply)
+    }
+
+    container.addEventListener('pointermove', onMove)
+    container.addEventListener('pointerleave', onLeave)
+    return () => {
+      container.removeEventListener('pointermove', onMove)
+      container.removeEventListener('pointerleave', onLeave)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [containerRef, shapeRefs, radius, maxPush])
+}

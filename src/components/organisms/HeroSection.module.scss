@@ -50,41 +50,91 @@
 }
 
 /* A few flat shapes, like spot colour printed under the type. */
-.shape {
+/* Outer element: pure position + pointer-reactive displacement. Split from
+   .shape so the ambient float animation (which owns `transform` on the
+   inner element) and the cursor-dodge translate (owned here) don't fight
+   over the same CSS property on the same element. */
+.shapeDodge {
+  display: block;
   position: absolute;
+  cursor: pointer;
+  transform: translate(var(--push-x, 0px), var(--push-y, 0px));
+  transition: transform 0.5s var(--ease-out);
+  pointer-events: auto;
+}
+
+.dodgeA {
+  top: 14%;
+  right: 9%;
+  width: clamp(5rem, 11vw, 9rem);
+  aspect-ratio: 1;
+}
+
+.dodgeB {
+  bottom: 14%;
+  right: 24%;
+  width: clamp(4rem, 8vw, 6.5rem);
+  aspect-ratio: 1;
+}
+
+.dodgeC {
+  top: 62%;
+  right: 6%;
+  width: clamp(3rem, 6vw, 5rem);
+  aspect-ratio: 1;
+}
+
+/* Click gives a short pop in a fixed per-shape direction, layered on top of
+   the dodge translate via calc() so it doesn't fight that transform either. */
+.kicked {
+  animation: shape-kick 0.55s var(--ease-out);
+}
+
+@keyframes shape-kick {
+  30% {
+    transform: translate(
+        calc(var(--push-x, 0px) + var(--kick-x, 0px)),
+        calc(var(--push-y, 0px) + var(--kick-y, 0px))
+      )
+      scale(1.18) rotate(20deg);
+  }
+  100% {
+    transform: translate(var(--push-x, 0px), var(--push-y, 0px)) scale(1) rotate(0deg);
+  }
+}
+
+/* Inner element: the shape's own look and its slow ambient drift. */
+.shape {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
   border: var(--border-w) solid var(--border);
   mix-blend-mode: var(--plate-blend);
   animation: shape-float 19s ease-in-out infinite;
 }
 
 .shapeA {
-  top: 14%;
-  right: 9%;
-  width: clamp(5rem, 11vw, 9rem);
-  aspect-ratio: 1;
   background: var(--magenta);
   border-radius: 50%;
 }
 
 .shapeB {
-  bottom: 14%;
-  right: 24%;
-  width: clamp(4rem, 8vw, 6.5rem);
-  aspect-ratio: 1;
   background: var(--cyan);
   animation-delay: -6s;
-  transform: rotate(14deg);
 }
 
 .shapeC {
-  top: 62%;
-  right: 6%;
-  width: clamp(3rem, 6vw, 5rem);
-  aspect-ratio: 1;
   background: var(--yellow);
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
   border: 0;
   animation-delay: -12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shapeDodge {
+    transition: none;
+  }
 }
 
 .inner {
@@ -191,7 +241,7 @@
 }
 
 @include m.down(m.$md) {
-  .shape,
+  .shapeDodge,
   .scrollHint {
     display: none;
   }
