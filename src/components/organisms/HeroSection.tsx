@@ -1,24 +1,64 @@
-import { useRef } from 'react'
+import { useRef, useState, type CSSProperties } from 'react'
 import { links, profile, ui } from '../../data/content'
-import { usePointerSpotlight } from '../../lib/hooks'
+import { useShapeDodge, usePointerSpotlight } from '../../lib/hooks'
 import { useLang } from '../../lib/i18n'
 import { AnimatedText, Badge, Button, Container, Icon, Reveal } from '../atoms'
 import { SocialLinks } from '../molecules'
 import styles from './HeroSection.module.scss'
+
+/** Fixed per-shape kick direction, so a click reads as a consistent "swat". */
+const KICKS: Record<'a' | 'b' | 'c', { x: string; y: string }> = {
+  a: { x: '38px', y: '-30px' },
+  b: { x: '-34px', y: '26px' },
+  c: { x: '30px', y: '32px' },
+}
+
+/** A floating shape that dodges the cursor and pops when clicked. */
+function DodgeShape({
+  id,
+  dodgeRef,
+  positionClass,
+  shapeClass,
+}: {
+  id: 'a' | 'b' | 'c'
+  dodgeRef: React.RefObject<HTMLSpanElement | null>
+  positionClass: string
+  shapeClass: string
+}) {
+  const [kicked, setKicked] = useState(false)
+  const kick = KICKS[id]
+
+  return (
+    <span
+      ref={dodgeRef}
+      className={`${styles.shapeDodge} ${positionClass} ${kicked ? styles.kicked : ''}`.trim()}
+      style={{ '--kick-x': kick.x, '--kick-y': kick.y } as CSSProperties}
+      onClick={() => setKicked(true)}
+      onAnimationEnd={() => setKicked(false)}
+    >
+      <span className={`${styles.shape} ${shapeClass}`} />
+    </span>
+  )
+}
 
 export function HeroSection() {
   const { lang, t } = useLang()
   const heroRef = useRef<HTMLElement>(null)
   usePointerSpotlight(heroRef)
 
+  const shapeARef = useRef<HTMLSpanElement>(null)
+  const shapeBRef = useRef<HTMLSpanElement>(null)
+  const shapeCRef = useRef<HTMLSpanElement>(null)
+  useShapeDodge(heroRef, [shapeARef, shapeBRef, shapeCRef])
+
   return (
     <section className={styles.hero} id="top" ref={heroRef}>
       <div className={styles.backdrop} aria-hidden="true">
         <span className={styles.plates} />
         <span className={styles.spotlight} />
-        <span className={`${styles.shape} ${styles.shapeA}`} />
-        <span className={`${styles.shape} ${styles.shapeB}`} />
-        <span className={`${styles.shape} ${styles.shapeC}`} />
+        <DodgeShape id="a" dodgeRef={shapeARef} positionClass={styles.dodgeA} shapeClass={styles.shapeA} />
+        <DodgeShape id="b" dodgeRef={shapeBRef} positionClass={styles.dodgeB} shapeClass={styles.shapeB} />
+        <DodgeShape id="c" dodgeRef={shapeCRef} positionClass={styles.dodgeC} shapeClass={styles.shapeC} />
       </div>
 
       <Container>
