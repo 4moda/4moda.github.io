@@ -143,8 +143,9 @@ export function usePointerSpotlight<T extends HTMLElement>(ref: React.RefObject<
 export function useShapeDodge(
   containerRef: React.RefObject<HTMLElement | null>,
   shapeRefs: React.RefObject<HTMLElement | null>[],
-  radius = 170,
-  maxPush = 46,
+  radius = 230,
+  maxPush = 80,
+  maxTotal = 240,
 ) {
   useEffect(() => {
     const container = containerRef.current
@@ -155,25 +156,37 @@ export function useShapeDodge(
     let frame = 0
     let pointerX = -Infinity
     let pointerY = -Infinity
+    // Accumulates and persists — a shape that's been nudged stays nudged
+    // instead of snapping back once the pointer moves away.
+    const offsets = shapeRefs.map(() => ({ x: 0, y: 0 }))
 
     const apply = () => {
       frame = 0
-      for (const ref of shapeRefs) {
+      shapeRefs.forEach((ref, i) => {
         const el = ref.current
-        if (!el) continue
+        if (!el) return
         const rect = el.getBoundingClientRect()
         const dx = rect.left + rect.width / 2 - pointerX
         const dy = rect.top + rect.height / 2 - pointerY
         const dist = Math.hypot(dx, dy)
-        if (dist > 0.01 && dist < radius) {
-          const strength = (1 - dist / radius) * maxPush
-          el.style.setProperty('--push-x', `${((dx / dist) * strength).toFixed(1)}px`)
-          el.style.setProperty('--push-y', `${((dy / dist) * strength).toFixed(1)}px`)
-        } else {
-          el.style.setProperty('--push-x', '0px')
-          el.style.setProperty('--push-y', '0px')
+        if (dist <= 0.01 || dist >= radius) return
+
+        const strength = (1 - dist / radius) * maxPush
+        let nx = offsets[i].x + (dx / dist) * strength
+        let ny = offsets[i].y + (dy / dist) * strength
+
+        // Clamped so a shape can wander but not off into the halftone.
+        const total = Math.hypot(nx, ny)
+        if (total > maxTotal) {
+          const scale = maxTotal / total
+          nx *= scale
+          ny *= scale
         }
-      }
+
+        offsets[i] = { x: nx, y: ny }
+        el.style.setProperty('--push-x', `${nx.toFixed(1)}px`)
+        el.style.setProperty('--push-y', `${ny.toFixed(1)}px`)
+      })
     }
 
     const onMove = (event: PointerEvent) => {
@@ -181,18 +194,11 @@ export function useShapeDodge(
       pointerY = event.clientY
       if (!frame) frame = requestAnimationFrame(apply)
     }
-    const onLeave = () => {
-      pointerX = -Infinity
-      pointerY = -Infinity
-      if (!frame) frame = requestAnimationFrame(apply)
-    }
 
     container.addEventListener('pointermove', onMove)
-    container.addEventListener('pointerleave', onLeave)
     return () => {
       container.removeEventListener('pointermove', onMove)
-      container.removeEventListener('pointerleave', onLeave)
       if (frame) cancelAnimationFrame(frame)
     }
-  }, [containerRef, shapeRefs, radius, maxPush])
+  }, [containerRef, shapeRefs, radius, maxPush, maxTotal])
 }
